@@ -1,5 +1,8 @@
 # Omniauth::Slack
 
+⚠   **NOTICE**: You are viewing the README of the **master** branch of the **MichalDron** fork of the **omniauth-slack** gem.
+This document may refer to features not yet released. This code may contain features and changes harmful or flawed.
+
 This Gem contains the Slack strategy for OmniAuth and supports the
 [Sign in with Slack](https://api.slack.com/docs/sign-in-with-slack) approval flow.
 
