@@ -4,7 +4,7 @@ require File.expand_path('../lib/omniauth-slack/version', __FILE__)
 Gem::Specification.new do |spec|
   spec.name          = "omniauth-slack"
   spec.version       = Omniauth::Slack::VERSION
-  spec.authors       = ["kimura"]
+  spec.authors       = ["kimura", "MichalDron"]
   spec.email         = ["kimura@enigmo.co.jp"]
   spec.description   = %q{OmniAuth strategy for Slack}
   spec.summary       = %q{OmniAuth strategy for Slack}
@@ -16,9 +16,9 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ["lib"]
 
-  spec.add_runtime_dependency 'omniauth-oauth2', "~> 1.4"
+  spec.add_runtime_dependency 'omniauth-oauth2', [">= 1.4", "< 3"]
 
-  spec.add_development_dependency "bundler", "~> 1.11.2"
+  spec.add_development_dependency "bundler", "~> 2.0"
   spec.add_development_dependency "rake"
   spec.add_development_dependency "minitest"
   spec.add_development_dependency "mocha"

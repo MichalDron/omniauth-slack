@@ -1,22 +1,28 @@
 require 'omniauth/strategies/oauth2'
-require 'uri'
-require 'rack/utils'
 
 module OmniAuth
   module Strategies
     class Slack < OmniAuth::Strategies::OAuth2
       option :name, 'slack'
 
-      option :authorize_options, [:scope, :team]
+      option :authorize_options, %i[scope user_scope team]
 
       option :client_options, {
         site: 'https://slack.com',
-        token_url: '/api/oauth.access'
+        token_url: '/api/oauth.v2.access',
+        authorize_url: '/oauth/v2/authorize',
+        token_method: :post
       }
 
       option :auth_token_params, {
-        mode: :query,
+        mode: :body,
         param_name: 'token'
+      }
+
+      option :token_params, {
+        parse: proc do |body|
+          MultiJson.decode(body)['authed_user']
+        end
       }
 
       # User ID is not guaranteed to be globally unique across all Slack users.
@@ -33,7 +39,7 @@ module OmniAuth
         }
 
         unless skip_info?
-          [:first_name, :last_name, :phone].each do |key|
+          %i[first_name last_name phone].each do |key|
             hash[key] = user_info['user'].to_h['profile'].to_h[key.to_s]
           end
         end
@@ -56,16 +62,14 @@ module OmniAuth
 
       def authorize_params
         super.tap do |params|
-          %w[scope team].each do |v|
-            if request.params[v]
-              params[v.to_sym] = request.params[v]
-            end
+          %w[scope user_scope team].each do |v|
+            params[v.to_sym] = request.params[v] if request.params[v]
           end
         end
       end
 
       def identity
-        @identity ||= access_token.get('/api/users.identity').parsed
+        @identity ||= access_token.post('/api/users.identity').parsed
       end
 
       def user_identity
@@ -85,20 +89,20 @@ module OmniAuth
       end
 
       def team_info
-        @team_info ||= access_token.get('/api/team.info').parsed
+        @team_info ||= access_token.post('/api/team.info').parsed
       end
 
       def web_hook_info
         return {} unless access_token.params.key? 'incoming_webhook'
+
         access_token.params['incoming_webhook']
       end
 
       def bot_info
         return {} unless access_token.params.key? 'bot'
+
         access_token.params['bot']
       end
-
-      private
 
       def callback_url
         full_host + script_name + callback_path

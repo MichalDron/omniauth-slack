@@ -11,11 +11,11 @@ class ClientTest < StrategyTestCase
   end
 
   test "has correct authorize url" do
-    assert_equal "/oauth/authorize", strategy.client.options[:authorize_url]
+    assert_equal "/oauth/v2/authorize", strategy.client.options[:authorize_url]
   end
 
   test "has correct token url" do
-    assert_equal "/api/oauth.access", strategy.client.options[:token_url]
+    assert_equal "/api/oauth.v2.access", strategy.client.options[:token_url]
   end
 end
 
@@ -107,8 +107,8 @@ class UserInfoTest < StrategyTestCase
     strategy.stubs(:access_token).returns(@access_token)
   end
 
-  test "performs a GET to https://slack.com/api/users.identity" do
-    @access_token.expects(:get).with("/api/users.identity")
+  test "performs a POST to https://slack.com/api/users.identity" do
+    @access_token.expects(:post).with("/api/users.identity")
       .returns(stub_everything("OAuth2::Response"))
     strategy.identity
   end
